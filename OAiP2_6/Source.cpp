@@ -6,6 +6,7 @@ using namespace std;
 
 const double EPS = 0.000001;
 const double DELTA = 0.00001;
+const int MAX_ITERATIONS = 1000;
 
 struct Queue
 {
@@ -131,6 +132,11 @@ void stepTwo(Queue*& begin, Queue*& end)
 
 double secantFunction(double x_prev, double x, int& k)
 {
+	if (k > MAX_ITERATIONS)
+	{
+		cout << "Unable to find value with given precision!" << endl;
+		return MAX_ITERATIONS;
+	}
 	double y_prev = function(x_prev);
 	x = x_prev - (y_prev * DELTA) / (y_prev - function(x_prev - DELTA));
 	if (fabs(x - x_prev) < EPS)
@@ -142,6 +148,11 @@ double secantFunction(double x_prev, double x, int& k)
 
 double vegstein(double x_1, double x_2, int& k)
 {
+	if (k > MAX_ITERATIONS)
+	{
+		cout << "Unable to find value with given precision!" << endl;
+		return MAX_ITERATIONS;
+	}
 	double y_2 = function(x_2);
 	double y_1 = function(x_1);
 	double x = x_2 - (y_2 * (x_2 - x_1)) / (y_2 - y_1);
