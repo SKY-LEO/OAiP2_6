@@ -219,7 +219,7 @@ double correctInputDouble()
 		{
 			cin.clear();
 			cin.ignore(256, '\n');
-			cout << "Error, please write Integer numbers!\n" << "Try again!" << endl;
+			cout << "Error, please write numbers!\n" << "Try again!" << endl;
 		}
 	}
 	return a;
