@@ -123,7 +123,7 @@ void stepTwo(Queue*& begin, Queue*& end)
 		result = secantFunction(x, x + h, k = 0);
 		cout << "Secant method\n" << setprecision(7) << "Result: " << result << "\nNumber of iterations: " << k << endl;
 		result = vegstein(x, x + h, k = 0);
-		cout << "\nVegstrein method\n" << setprecision(7) << "Result: " << result << "\nNumber of iterations: " << k << endl;
+		cout << "\nVegstein method\n" << setprecision(7) << "Result: " << result << "\nNumber of iterations: " << k << endl;
 		cout << endl;
 		i++;
 	}
