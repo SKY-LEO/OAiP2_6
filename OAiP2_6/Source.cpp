@@ -2,10 +2,11 @@
 #include <conio.h>
 #include <iomanip>
 #include <ctime>
+#include <chrono>
 
 using namespace std;
 
-const double EPS = 0.000001;
+const double EPS = 0.0000000000000000000000001;
 const double DELTA = 0.00001;
 
 struct Queue
@@ -71,21 +72,24 @@ int main()
 
 void stepTwo(Queue*& begin, Queue*& end)
 {
-	double x, h;
+	double x, h, result;
 	int i = 1, k = 0;
-	unsigned int start_time, end_time;
 	while (begin)
 	{
 		popQueue(begin, end, x, h);
 		cout << "-> " << i << endl;
-		start_time = clock();
-		secantFunction(x, x + h, k = 0);
-		end_time = clock();
-		cout << "Time: "  << (double)(end_time - start_time) / CLOCKS_PER_SEC << " s" << endl;
-		start_time = clock();
-		vegstein(x, x + h, k = 0);
-		end_time = clock();
-		cout << "Time: " <<(double)(end_time - start_time)/ CLOCKS_PER_SEC << " s" << endl;
+		auto start_time = chrono::high_resolution_clock::now();
+		result = secantFunction(x, x + h, k = 0);
+		auto end_time = chrono::high_resolution_clock::now();
+		cout << setprecision(7) << "Result: " << result << "\nNumber of iterations: " << k << endl;
+		auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
+		cout << "Time: " << duration.count() << " micros" << endl;
+		start_time = chrono::high_resolution_clock::now();
+		result = vegstein(x, x + h, k = 0);
+		end_time = chrono::high_resolution_clock::now();
+		duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
+		cout << setprecision(7) << "Result: " << result << "\nNumber of iterations: " << k << endl;
+		cout << "Time: " << duration.count() << " micros" << endl;
 		cout << endl;
 		i++;
 	}
@@ -123,9 +127,8 @@ void showInterval(Queue* begin, int i)
 double secantFunction(double x_prev, double x, int& k)
 {
 	x = x_prev - (function(x_prev) * DELTA) / (function(x_prev) - function(x_prev - DELTA));
-	if (abs(x - x_prev) < EPS)
+	if (fabs(x - x_prev) < EPS)
 	{
-		cout << setprecision(7) << "Result: " << x << "\nNumber of iterations: " << k << endl;
 		return x;
 	}
 	return secantFunction(x, x, ++k);
@@ -133,13 +136,12 @@ double secantFunction(double x_prev, double x, int& k)
 
 double vegstein(double x_1, double x_2, int& k)
 {
-	double x = x_1 - (function(x_1) * (x_1 - x_2)) / (function(x_1) - function(x_2));
-	if (abs(x - x_1) < EPS)
+	double x = x_2 - (function(x_2) * (x_2 - x_1)) / (function(x_2) - function(x_1));
+	if (fabs(x_2 - x) < EPS)
 	{
-		cout << setprecision(7) << "Result: " << x << "\nNumber of iterations: " << k << endl;
 		return x;
 	}
-	return vegstein(x, x_1, ++k);
+	return vegstein(x_2, x, ++k);
 }
 
 bool isGoodStep(double a, double b, double h)
@@ -160,7 +162,6 @@ bool isGoodStep(double a, double b, double h)
 double function(double x)
 {
 	return x - 5 * sin(x) * sin(x) - 5;
-	//return x * x;
 }
 
 void pushQueue(Queue*& begin, Queue*& end, double x, double h)
