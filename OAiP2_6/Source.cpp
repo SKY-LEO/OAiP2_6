@@ -16,6 +16,7 @@ struct Queue
 };
 
 bool isGoodStep(double a, double b, double h);
+int numOfSymAfterComma(double num, int k);
 double correctInputDouble();
 double function(double x);
 double secantFunction(double x_prev, double x, int& k);
@@ -24,14 +25,18 @@ void pushQueue(Queue*& begin, Queue*& end, double x, double h);
 void popQueue(Queue*& begin, Queue*& end, double& x, double& h);
 void deleteQueue(Queue*& begin, Queue*& end);
 void stepOne(Queue*& begin, Queue*& end, double a, double b, double h);
-void showInterval(Queue* begin, int i);
-void stepTwo(Queue*& begin, Queue*& end);
+void showInterval(Queue* begin, int i, int k);
+void stepTwo(Queue*& begin, Queue*& end, int k);
+void searchSpecial(Queue*& begin, Queue*& end, double a, double b, double h);
 
 int main()
 {
 	char code;
 	double a, b, h;
+	int k = numOfSymAfterComma(EPS, 1);
 	Queue* begin = nullptr, * end = nullptr;
+	cout << "Function: x - 5(sinx)^2 - 5" << "\nEPS: " << EPS << endl;
+	cout << "------------------------------------------" << endl;
 	do
 	{
 		cout << "Enter a:" << endl;
@@ -54,12 +59,27 @@ int main()
 		if (begin)
 		{
 			cout << "\nIntervals:" << endl;
-			showInterval(begin, 1);
-			stepTwo(begin, end);
+			showInterval(begin, 1, k);
+			stepTwo(begin, end, k);
 		}
 		else
 		{
 			cout << "There are no roots of function!" << endl;
+		}
+		cout << "Do you want to search special roots?(Y/N)" << endl;
+		code = (char)_getch();
+		if (code == 'Y' || code == 'y')
+		{
+			searchSpecial(begin, end, a, b, EPS / 10.);
+			if (begin)
+			{
+				cout << "\nIntervals:" << endl;
+				showInterval(begin, 1, k);
+			}
+			else
+			{
+				cout << "There are no special roots of function!" << endl;
+			}
 		}
 		if (begin)deleteQueue(begin, end);
 		cout << "Do you want to continue?(Y/N)" << endl;
@@ -88,7 +108,7 @@ void stepOne(Queue*& begin, Queue*& end, double a, double b, double h)
 {
 	double var;
 	cout << "---------------------------------" << endl;
-	for (double x = a; x <= b; x += h)
+	for (double x = a; x < b + h / 4.; x += h)
 	{
 		cout << "|\t" << x;
 		var = function(x);
@@ -102,18 +122,18 @@ void stepOne(Queue*& begin, Queue*& end, double a, double b, double h)
 	}
 }
 
-void showInterval(Queue* begin, int i)
+void showInterval(Queue* begin, int i, int k)
 {
 	if (begin)
 	{
-		cout << i << "-> [" << begin->x << " ; " << begin->x + begin->h << "]" << endl;
+		cout << i << "-> [" << setprecision(k) << begin->x << " ; " << begin->x + begin->h << "]" << endl;
 		begin = begin->next;
-		return showInterval(begin, i + 1);
+		return showInterval(begin, i + 1, k);
 	}
 	cout << endl;
 }
 
-void stepTwo(Queue*& begin, Queue*& end)
+void stepTwo(Queue*& begin, Queue*& end, int j)
 {
 	double x, h, result;
 	int i = 1, k = 0;
@@ -122,9 +142,9 @@ void stepTwo(Queue*& begin, Queue*& end)
 		popQueue(begin, end, x, h);
 		cout << "-> " << i << endl;
 		result = secantFunction(x, x + h, k = 0);
-		cout << "Secant method\n" << setprecision(7) << "Result: " << result << "\nNumber of iterations: " << k << endl;
+		cout << "Secant method\n" << setprecision(j) << "x: " << result << "\nf(x): " << function(result) << "\nNumber of iterations: " << k << endl;
 		result = vegstein(x, x + h, k = 0);
-		cout << "\nVegstein method\n" << setprecision(7) << "Result: " << result << "\nNumber of iterations: " << k << endl;
+		cout << "\nVegstein method\n" << setprecision(j) << "x: " << result << "\nf(x): " << function(result) << "\nNumber of iterations: " << k << endl;
 		cout << endl;
 		i++;
 	}
@@ -163,9 +183,41 @@ double vegstein(double x_1, double x_2, int& k)
 	return vegstein(x_2, x, ++k);
 }
 
+void searchSpecial(Queue*& begin, Queue*& end, double a, double b, double h)
+{
+	double var, x_a, x_h;
+	bool flag = false;
+	cout << "In process..." << endl;
+	for (double x = a; x < b + h / 4.; x += h)
+	{
+		var = function(x);
+		if (fabs(var) < EPS && !flag)
+		{
+			x_a = x;
+			flag = true;
+		}
+		else if (fabs(var) > EPS && flag)
+		{
+			x_h = x - x_a;
+			pushQueue(begin, end, x_a, x_h);
+			flag = false;
+		}
+	}
+}
+
 double function(double x)
 {
 	return x - 5 * sin(x) * sin(x) - 5;
+	//return fabs(cos(x));
+}
+
+int numOfSymAfterComma(double num, int k)
+{
+	if (num >= 1. || num <= -1.)
+	{
+		return k;
+	}
+	return numOfSymAfterComma(num * 10, k + 1);
 }
 
 void pushQueue(Queue*& begin, Queue*& end, double x, double h)
