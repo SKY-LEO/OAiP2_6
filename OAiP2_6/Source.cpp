@@ -91,7 +91,7 @@ int main()
 
 bool isGoodStep(double a, double b, double h)
 {
-	if (h > b - a)
+	if (h > fabs(a - b))
 	{
 		cout << "h bigger than gap!" << endl;
 		return false;
@@ -142,9 +142,9 @@ void stepTwo(Queue*& begin, Queue*& end, int j)
 		popQueue(begin, end, x, h);
 		cout << "-> " << i << endl;
 		result = secantFunction(x, x + h, k = 0);
-		cout << "Secant method\n" << setprecision(j) << "x: " << result << "\nf(x): " << function(result) << "\nNumber of iterations: " << k << endl;
+		cout << "Secant method\n" << setprecision(j) << "x: " << result << "\nNumber of iterations: " << k << endl;
 		result = vegstein(x, x + h, k = 0);
-		cout << "\nVegstein method\n" << setprecision(j) << "x: " << result << "\nf(x): " << function(result) << "\nNumber of iterations: " << k << endl;
+		cout << "\nVegstein method\n" << setprecision(j) << "x: " << result << "\nNumber of iterations: " << k << endl;
 		cout << endl;
 		i++;
 	}
@@ -208,7 +208,7 @@ void searchSpecial(Queue*& begin, Queue*& end, double a, double b, double h)
 double function(double x)
 {
 	return x - 5 * sin(x) * sin(x) - 5;
-	//return fabs(cos(x));
+	//return x*x;
 }
 
 int numOfSymAfterComma(double num, int k)
