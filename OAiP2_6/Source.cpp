@@ -19,7 +19,7 @@ bool isGoodStep(double a, double b, double h);
 int numOfSymAfterComma(double num, int k);
 double correctInputDouble();
 double function(double x);
-double secantFunction(double x_prev, double x, int& k);
+double secantFunction(double x_prev, int& k);
 double vegstein(double x_1, double x_2, int& k);
 void pushQueue(Queue*& begin, Queue*& end, double x, double h);
 void popQueue(Queue*& begin, Queue*& end, double& x, double& h);
@@ -141,7 +141,7 @@ void stepTwo(Queue*& begin, Queue*& end, int j)
 	{
 		popQueue(begin, end, x, h);
 		cout << "-> " << i << endl;
-		result = secantFunction(x, x + h, k = 0);
+		result = secantFunction(x, k = 0);
 		cout << "Secant method\n" << setprecision(j) << "x: " << result << "\nNumber of iterations: " << k << endl;
 		result = vegstein(x, x + h, k = 0);
 		cout << "\nVegstein method\n" << setprecision(j) << "x: " << result << "\nNumber of iterations: " << k << endl;
@@ -150,20 +150,21 @@ void stepTwo(Queue*& begin, Queue*& end, int j)
 	}
 }
 
-double secantFunction(double x_prev, double x, int& k)
+double secantFunction(double x_prev, int& k)
 {
 	if (k > MAX_ITERATIONS)
 	{
 		cout << "Unable to find value with given precision!" << endl;
 		return MAX_ITERATIONS;
 	}
+	double x;
 	double y_prev = function(x_prev);
 	x = x_prev - (y_prev * DELTA) / (y_prev - function(x_prev - DELTA));
 	if (fabs(x - x_prev) < EPS)
 	{
 		return x;
 	}
-	return secantFunction(x, x, ++k);
+	return secantFunction(x, ++k);
 }
 
 double vegstein(double x_1, double x_2, int& k)
