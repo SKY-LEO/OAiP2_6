@@ -1,3 +1,7 @@
+/*
+* Метод секущих и Вегстейна
+*/
+
 #include <iostream>
 #include <conio.h>
 #include <iomanip>
